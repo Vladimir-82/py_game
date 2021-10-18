@@ -4,7 +4,7 @@ https://younglinux.info/pygame/key
 
 import pygame
 
-FPS = 30
+FPS = 20
 W, H = 800, 500
 R = 50
 
@@ -15,6 +15,7 @@ clock = pygame.time.Clock()
 v = 0
 h = W // 2
 
+UP = 'to the UP'
 RIGHT = "to the right"
 LEFT = "to the left"
 STOP = "stop"
@@ -36,8 +37,12 @@ while play:
                 motion = LEFT
             elif i.key == pygame.K_RIGHT:
                 motion = RIGHT
+            elif i.key == pygame.K_UP:
+                motion = UP
+
+
         elif i.type == pygame.KEYUP:
-            if i.key in [pygame.K_LEFT, pygame.K_RIGHT]:
+            if i.key in [pygame.K_LEFT, pygame.K_RIGHT, pygame, pygame.K_UP]:
                 motion = STOP
 
 
@@ -47,8 +52,9 @@ while play:
     pygame.draw.circle(sc, (100, 10, 200), (h, v), R)
     v += 15
 
-    if v >= H - R//2:
-        pygame.draw.circle(sc, (200, 200, 200), (h, v), R)
+    if v >= H - R:
+        pygame.draw.circle(sc, (200, 200, 200), (h, H - R), R)
+        pygame.display.update()
         break
 
 
@@ -57,14 +63,15 @@ while play:
         h -= 20
     elif motion == RIGHT:
         h += 20
+    elif motion == UP:
+        v -= 30
 
     if h >= W - R:
         h = W - R
     elif h <= R:
         h = R
 
-
-
-
-
     clock.tick(FPS)
+
+
+
