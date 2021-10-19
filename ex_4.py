@@ -106,8 +106,8 @@ while play:
             level_450 = level_450 - 2 * R
         v = 0
 
-        # if (50, 850) in animation and (150, 850) in animation and (250, 850) in animation and (350, 850) in animation and (340, 850) in animation:
-        if (50, 850) in animation:
+        if (50, 850) in animation and (150, 850) in animation and (250, 850) in animation and (350, 850) in animation and (350, 850) in animation:
+
             animation.remove((50, 850))
             animation.remove((150, 850))
             animation.remove((250, 850))
