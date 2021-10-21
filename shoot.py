@@ -36,6 +36,7 @@ while running:
                 # horisontal, vertical = i.pos[0], i.pos[1]
                 pygame.display.update()
                 # vertical += 5
+
     pygame.display.flip()
 
 pygame.quit()
