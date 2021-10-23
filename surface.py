@@ -8,18 +8,42 @@ https://younglinux.info/pygame/surface
 '''
 import pygame
 import sys
+from random import randint
 
 WIN_WIDTH = 800
 WIN_HEIGHT = 600
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
 
+
+class Weapon:
+    size_weapon = 5
+
+    def __init__(self, surface, color):
+        self.surf = surface
+        self.color = color
+        self.x_w = randint(Weapon.size_weapon//2, surface.get_width() - Weapon.size_weapon)
+        self.y_w = 0
+
+    def fly_weapon(self):
+        pygame.draw.circle(self.surf, self.color, (self.x_w, self.y_w), Weapon.size_weapon)
+        self.y_w += 5
+
+        if self.y_w >= WIN_HEIGHT:
+            self.y_w = 0
+            self.x_w = randint(Weapon.size_weapon // 2, WIN_WIDTH//2 - Weapon.size_weapon)
+
+        if self.y_w >= WIN_HEIGHT//2:
+            return True
 
 class Rocket:
     # ширина и высота у всех
     # экземпляров-ракет будут одинаковы
     width_rocket = 20
     height_rocket = 50
+
 
     def __init__(self, surface, color):
         """Конструктору необходимо передать
@@ -37,7 +61,7 @@ class Rocket:
         self.x = surface.get_width() // 2 - Rocket.width_rocket // 2
         self.y = surface.get_height()
 
-    def fly(self):
+    def fly_roket(self):
         """Вызов метода fly() поднимает
         ракету на 3 пикселя.
         Если ракета скрывается вверху,
@@ -75,6 +99,13 @@ sc.blit(surf_right, (WIN_WIDTH // 2, 0))
 rocket_left = Rocket(surf_left, BLACK)
 rocket_right = Rocket(surf_right, WHITE)
 
+
+weapon_left = Weapon(surf_left, RED)
+if weapon_left:
+    weapon_left = Weapon(surf_left, RED)
+weapon_right = Weapon(surf_right, BLUE)
+
+
 # какая половина активна,
 # до первого клика - никакая
 active_left = False
@@ -103,13 +134,15 @@ while 1:
         # то заливаем только ее цветом,
         surf_left.fill(WHITE)
         # поднимаем ракету,
-        rocket_left.fly()
+        rocket_left.fly_roket()
+        weapon_left.fly_weapon()
         # заново отрисовываем левую
         # поверхность на главной.
         sc.blit(surf_left, (0, 0))
     elif active_right:
         surf_right.fill(BLACK)
-        rocket_right.fly()
+        rocket_right.fly_roket()
+        weapon_right.fly_weapon()
         sc.blit(surf_right, (WIN_WIDTH // 2, 0))
 
     pygame.display.update()
