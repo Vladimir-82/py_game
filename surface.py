@@ -15,6 +15,7 @@ WIN_HEIGHT = 600
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
+GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
 
@@ -29,14 +30,11 @@ class Weapon:
 
     def fly_weapon(self):
         pygame.draw.circle(self.surf, self.color, (self.x_w, self.y_w), Weapon.size_weapon)
-        self.y_w += 5
+        self.y_w += 2
 
         if self.y_w >= WIN_HEIGHT:
             self.y_w = 0
             self.x_w = randint(Weapon.size_weapon // 2, WIN_WIDTH//2 - Weapon.size_weapon)
-
-        if self.y_w >= WIN_HEIGHT//2:
-            return True
 
 class Rocket:
     # ширина и высота у всех
@@ -99,10 +97,9 @@ sc.blit(surf_right, (WIN_WIDTH // 2, 0))
 rocket_left = Rocket(surf_left, BLACK)
 rocket_right = Rocket(surf_right, WHITE)
 
+weapon_base = []
 
-weapon_left = Weapon(surf_left, RED)
-if weapon_left:
-    weapon_left = Weapon(surf_left, RED)
+weapon_base.append(Weapon(surf_left, RED))
 weapon_right = Weapon(surf_right, BLUE)
 
 
@@ -129,13 +126,19 @@ while 1:
                 active_right = True
                 active_left = False
 
+
     if active_left:
         # Если активна левая поверхность,
         # то заливаем только ее цветом,
         surf_left.fill(WHITE)
         # поднимаем ракету,
         rocket_left.fly_roket()
-        weapon_left.fly_weapon()
+
+        for i in weapon_base:
+            i.fly_weapon()
+            dice = randint(1, 1000)
+            if dice == 1:
+                weapon_base.append(Weapon(surf_left, RED))
         # заново отрисовываем левую
         # поверхность на главной.
         sc.blit(surf_left, (0, 0))
@@ -144,6 +147,7 @@ while 1:
         rocket_right.fly_roket()
         weapon_right.fly_weapon()
         sc.blit(surf_right, (WIN_WIDTH // 2, 0))
+
 
     pygame.display.update()
     pygame.time.delay(20)
