@@ -136,8 +136,9 @@ while 1:
 
         for i in weapon_base:
             i.fly_weapon()
+
             dice = randint(1, 1000)
-            if dice == 1:
+            if dice == 1 and len(weapon_base) < 20:# ограничение бомб
                 weapon_base.append(Weapon(surf_left, RED))
         # заново отрисовываем левую
         # поверхность на главной.
