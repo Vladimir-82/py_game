@@ -12,26 +12,19 @@ sc.fill((100, 150, 200))
 
 car_surf = pygame.image.load('car.jpg').convert()
 car_surf.set_colorkey((255, 255, 255))
+
 car_rect = car_surf.get_rect(center=(h, w))
 sc.blit(car_surf, car_rect)
 pygame.display.update()
 
 motion = STOP
 
-sc.fill((100, 150, 200))
-# поворачиваем на 45 градусов
-# rot = pygame.transform.rotate(car_surf, 45)
-# rot_rect = rot.get_rect(center=(H//2, W//2))
-# sc.blit(rot, rot_rect)
-# pygame.display.update()
-
-
 while 1:
-    sc.fill((100, 150, 200))
 
+    car_surf = pygame.image.load('car.jpg').convert()
     car_surf.set_colorkey((255, 255, 255))
     car_rect = car_surf.get_rect(center=(h, w))
-    sc.blit(car_surf, car_rect)
+
 
 
     for i in pygame.event.get():
@@ -49,23 +42,53 @@ while 1:
         elif i.type == pygame.KEYUP:
             if i.key in [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]:
                 motion = STOP
+                car_surf = rot
 
-    car_rect = car_surf.get_rect(center=(h, w))
-    sc.blit(car_surf, car_rect)
     if motion == LEFT:
         h -= 2
+
+        sc.fill((100, 150, 200))
+        car_surf.set_colorkey((255, 255, 255))
         rot = pygame.transform.rotate(car_surf, 90)
         rot_rect = rot.get_rect(center=(h, w))
         sc.blit(rot, rot_rect)
-        # car_surf = rot
-        # car_rect = rot_rect
 
     elif motion == RIGHT:
         h += 2
+
+        sc.fill((100, 150, 200))
+        car_surf.set_colorkey((255, 255, 255))
+        rot = pygame.transform.rotate(car_surf, -90)
+        rot_rect = rot.get_rect(center=(h, w))
+        sc.blit(rot, rot_rect)
+
     elif motion == UP:
         w -= 2
+        sc.fill((100, 150, 200))
+        car_surf.set_colorkey((255, 255, 255))
+        rot = pygame.transform.rotate(car_surf, 0)
+        rot_rect = rot.get_rect(center=(h, w))
+        sc.blit(rot, rot_rect)
+
+
     elif motion == DOWN:
         w += 2
+        sc.fill((100, 150, 200))
+        car_surf.set_colorkey((255, 255, 255))
+        rot = pygame.transform.rotate(car_surf, 180)
+        rot_rect = rot.get_rect(center=(h, w))
+        sc.blit(rot, rot_rect)
+
+    if h <= 35:
+        h = 35
+    if h >= H - 35:
+        h = H - 35
+
+    if w <= 35:
+        w = 35
+    if w >= W - 35:
+        w = W - 35
+
 
     pygame.display.update()
     pygame.time.delay(20)
