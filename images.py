@@ -28,6 +28,12 @@ sc.fill((100, 150, 200))
 
 while 1:
     sc.fill((100, 150, 200))
+
+    car_surf.set_colorkey((255, 255, 255))
+    car_rect = car_surf.get_rect(center=(h, w))
+    sc.blit(car_surf, car_rect)
+
+
     for i in pygame.event.get():
         if i.type == pygame.QUIT:
             sys.exit()
@@ -50,10 +56,9 @@ while 1:
         h -= 2
         rot = pygame.transform.rotate(car_surf, 90)
         rot_rect = rot.get_rect(center=(h, w))
-        car_rect = rot_rect
-
         sc.blit(rot, rot_rect)
-
+        # car_surf = rot
+        # car_rect = rot_rect
 
     elif motion == RIGHT:
         h += 2
