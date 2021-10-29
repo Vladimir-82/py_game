@@ -1,3 +1,7 @@
+'''
+https://answer-id.com/ru/55455174
+'''
+
 import pygame
 import sys
 RIGHT = "to the right"
@@ -45,7 +49,7 @@ while 1:
                 car_surf = rot
 
     if motion == LEFT:
-        h -= 2
+        h -= 3
 
         sc.fill((100, 150, 200))
         car_surf.set_colorkey((255, 255, 255))
@@ -54,7 +58,7 @@ while 1:
         sc.blit(rot, rot_rect)
 
     elif motion == RIGHT:
-        h += 2
+        h += 3
 
         sc.fill((100, 150, 200))
         car_surf.set_colorkey((255, 255, 255))
@@ -63,7 +67,7 @@ while 1:
         sc.blit(rot, rot_rect)
 
     elif motion == UP:
-        w -= 2
+        w -= 3
         sc.fill((100, 150, 200))
         car_surf.set_colorkey((255, 255, 255))
         rot = pygame.transform.rotate(car_surf, 0)
@@ -72,22 +76,22 @@ while 1:
 
 
     elif motion == DOWN:
-        w += 2
+        w += 3
         sc.fill((100, 150, 200))
         car_surf.set_colorkey((255, 255, 255))
         rot = pygame.transform.rotate(car_surf, 180)
         rot_rect = rot.get_rect(center=(h, w))
         sc.blit(rot, rot_rect)
 
-    if h <= 35:
-        h = 35
-    if h >= H - 35:
-        h = H - 35
+    if h <= car_rect.height//2:
+        h = car_rect.height//2
+    if h >= H - car_rect.height//2:
+        h = H - car_rect.height//2
 
-    if w <= 35:
-        w = 35
-    if w >= W - 35:
-        w = W - 35
+    if w <= car_rect.height//2:
+        w = car_rect.height//2
+    if w >= W - car_rect.height//2:
+        w = W - car_rect.height//2
 
 
     pygame.display.update()
