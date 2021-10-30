@@ -21,18 +21,30 @@ DOWN = "to the down"
 STOP = "stop"
 
 motion = None
-W = 800
-H = 800
+W = 600
+H = 639
+W_, H_ = 1100, 659
 WHITE = (255, 255, 255)
+MAIN_FONT = (100, 150, 200)
+
+
 CARS = ('car1.png', 'car2.png', 'car3.png')
+
 
 # для хранения готовых машин-поверхностей
 CARS_SURF = []
 
 # надо установить видео режим
 # до вызова image.load()
-sc = pg.display.set_mode((W, H))
+sc_main = pg.display.set_mode((W_, H_))
+sc = pg.Surface((W, H))
+sc_main.fill(MAIN_FONT)
 
+font_name = pg.font.Font(None, 80)
+text_name = font_name.render('ТАЧКИ', True, (255, 0, 0))
+place = text_name.get_rect(center = (850, 40))
+
+bg = pg.image.load('FONT.jpg').convert_alpha()
 for i in range(len(CARS)):
     CARS_SURF.append(
         pg.image.load(CARS[i]).convert_alpha())
@@ -75,8 +87,14 @@ class My_Car(pg.sprite.Sprite):
             self.rect.y -= 3
         elif motion == DOWN:
             self.rect.y += 3
-        elif self.rect.x < 0: #ограничения
+        if self.rect.x <= 0: #ограничения
             self.rect.x = 0
+        if self.rect.x >= W - self.rect.width: #ограничения
+            self.rect.x = W - self.rect.width
+        if self.rect.y >= H - self.rect.height: #ограничения
+            self.rect.y = H - self.rect.height
+        if self.rect.y <= 0: #ограничения
+            self.rect.y = 0
 
 
 cars = pg.sprite.Group()
@@ -87,6 +105,10 @@ my_car = My_Car(W//2, 'car.jpg')
 Car(randint(15, W - 15), CARS_SURF[randint(0, 2)], cars) #разобраться с этой строкой
 
 while 1:
+    sc_main.blit(bg, (0, 0))
+    sc_main.blit(text_name, place)
+    sc_main.blit(sc, (20, 20))
+
     for i in pg.event.get():
         if i.type == pg.QUIT:
             sys.exit()
