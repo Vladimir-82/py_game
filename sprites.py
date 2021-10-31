@@ -10,6 +10,7 @@
 from random import randint
 import pygame as pg
 import sys
+import time
 
 pg.init()
 pg.time.set_timer(pg.USEREVENT, 500)
@@ -96,6 +97,9 @@ class My_Car(pg.sprite.Sprite):
         if self.rect.y <= 0: #ограничения
             self.rect.y = 0
 
+    def boom(self):
+        pg.draw.circle(sc, (255, 0, 0), (self.rect.x, self.rect.y), 2 * self.rect.width)
+
 
 cars = pg.sprite.Group()
 my_car = My_Car(W//2, 'car.jpg')
@@ -137,7 +141,10 @@ while 1:
 
     if pg.sprite.spritecollideany(my_car, cars):
         print('Game over')
+        my_car.boom() #не работает скотина
+        time.sleep(1)
         sys.exit()
+
 
     pg.display.update()
     pg.time.delay(20)
