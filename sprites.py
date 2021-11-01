@@ -22,7 +22,7 @@ DOWN = "to the down"
 STOP = "stop"
 
 motion = None
-W = 600
+W = 500
 H = 639
 W_, H_ = 1100, 659
 WHITE = (255, 255, 255)
@@ -41,11 +41,39 @@ sc_main = pg.display.set_mode((W_, H_))
 sc = pg.Surface((W, H))
 sc_main.fill(MAIN_FONT)
 
-font_name = pg.font.Font(None, 80)
+info_font = pg.font.Font('font/font.ttf', 50)
+font_name = pg.font.Font('font/font.ttf', 80)
 text_name = font_name.render('ТАЧКИ', True, (255, 0, 0))
-place = text_name.get_rect(center = (850, 40))
+place = text_name.get_rect(center=(850, 60))
+
+score_show = info_font.render("SCORE", True, pg.Color('darkorange'))
+score_place = score_show.get_rect(center=(850, 200))
+title_record = info_font.render("Record", True, pg.Color('gold'))
+record_place = title_record.get_rect(center=(850, 400))
+
+main_font = pg.font.Font('font/font.ttf', 80)
+game_over = main_font.render("GAME OVER", True, pg.Color('green'))
+game_over_place = game_over.get_rect(center=(W_//2, H_//2))
 
 bg = pg.image.load('FONT.jpg').convert_alpha()
+score = 0
+
+
+
+def get_record():
+    try:
+        with open('record_cars') as f:
+            return f.readline()
+    except FileNotFoundError:
+        with open('record_cars', 'w') as f:
+            f.write('0')
+
+
+def set_record(record, score):
+    rec = max(int(record), score)
+    with open('record_cars', 'w') as f:
+        f.write(str(rec))
+
 for i in range(len(CARS)):
     CARS_SURF.append(
         pg.image.load(CARS[i]).convert_alpha())
@@ -69,6 +97,8 @@ class Car(pg.sprite.Sprite):
             # теперь не перебрасываем вверх,
             # а удаляем из всех групп
             self.kill()
+            global score
+            score += 10
 
 class My_Car(pg.sprite.Sprite):
     def __init__(self, x, filename):
@@ -98,7 +128,7 @@ class My_Car(pg.sprite.Sprite):
             self.rect.y = 0
 
     def boom(self):
-        pg.draw.circle(sc, (255, 0, 0), (self.rect.x, self.rect.y), 2 * self.rect.width)
+        pg.draw.circle(sc_main, pg.Color('red'), (self.rect.x + self.rect.width, self.rect.y + self.rect.width//2), self.rect.width//3)
 
 
 cars = pg.sprite.Group()
@@ -106,18 +136,21 @@ my_car = My_Car(W//2, 'car.jpg')
 
 # добавляем первую машину,
 # которая появляется сразу
-Car(randint(15, W - 15), CARS_SURF[randint(0, 2)], cars) #разобраться с этой строкой
+# Car(randint(60, W//2), CARS_SURF[randint(0, 2)], cars) #разобраться с этой строкой
 
 while 1:
+    record = get_record()
     sc_main.blit(bg, (0, 0))
     sc_main.blit(text_name, place)
     sc_main.blit(sc, (20, 20))
+    sc_main.blit(score_show, score_place)
+    sc_main.blit(title_record, record_place)
 
     for i in pg.event.get():
         if i.type == pg.QUIT:
             sys.exit()
         elif i.type == pg.USEREVENT:
-            Car(randint(1, W),
+            Car(randint(15, W - 15),
                 CARS_SURF[randint(0, 2)], cars)
 
         elif i.type == pg.KEYDOWN:
@@ -140,13 +173,20 @@ while 1:
     cars.draw(sc)
 
     if pg.sprite.spritecollideany(my_car, cars):
-        print('Game over')
-        my_car.boom() #не работает скотина
-        time.sleep(1)
-        sys.exit()
+        my_car.boom()
+        sc_main.blit(game_over, game_over_place)
+        pg.display.flip()
+        time.sleep(2)
+        set_record(record, score)
+        break
 
+    sc_main.blit(info_font.render(str(score), True, pg.Color('red')), (840, 250))
+    sc_main.blit(info_font.render(str(record), True, pg.Color('gold')), (840, 450))
 
     pg.display.update()
+
+
+
     pg.time.delay(20)
 
     cars.update()
