@@ -120,7 +120,7 @@ class Car(pg.sprite.Sprite):
         else:
             self.kill()
             global score
-            score += 1
+            score += -1
 
 class My_Car(pg.sprite.Sprite):
 
@@ -214,8 +214,13 @@ while 1:
         if pg.sprite.spritecollideany(my_car, cars):
             pg.mixer.music.pause()
             sc_main.blit(game_over, game_over_place)
+
+            # sc_main.blit(score_show, score_place)  почему не показывает?
+            # sc_main.blit(title_record, record_place)  почему не показывает?
+
             my_car.boom()
             boom.play()
+
             pg.time.wait(1000)
             game_over_music.play()
             pg.time.wait(4000)
