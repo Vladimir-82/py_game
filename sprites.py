@@ -10,10 +10,10 @@
 from random import randint
 import pygame as pg
 import sys
-import time
 
 pg.init()
-pg.time.set_timer(pg.USEREVENT, 500)
+mach = 500
+pg.time.set_timer(pg.USEREVENT, mach)
 
 RIGHT = "to the right"
 LEFT = "to the left"
@@ -41,6 +41,15 @@ sc_main = pg.display.set_mode((W_, H_))
 sc = pg.Surface((W, H))
 sc_main.fill(MAIN_FONT)
 
+pg.mixer.music.load('Super Mario - 1.mp3')
+pg.mixer.music.play(-1)
+
+boom = pg.mixer.Sound('smb_bump.wav')
+game_over_music = pg.mixer.Sound('smb_gameover.wav')
+fire_shot = pg.mixer.Sound('smb_fireworks.wav')
+demage_animy = pg.mixer.Sound('smb_breakblock.wav')
+
+
 info_font = pg.font.Font('font/font.ttf', 50)
 font_name = pg.font.Font('font/font.ttf', 80)
 text_name = font_name.render('ТАЧКИ', True, (255, 0, 0))
@@ -57,8 +66,6 @@ game_over_place = game_over.get_rect(center=(W_//2, H_//2))
 
 bg = pg.image.load('FONT.jpg').convert_alpha()
 score = 0
-
-
 
 def get_record():
     try:
@@ -79,6 +86,23 @@ for i in range(len(CARS)):
         pg.image.load(CARS[i]).convert_alpha())
 
 
+class Bomb(pg.sprite.Sprite):
+    def __init__(self, pos, group):
+        pos[0] = pos[0] - 20
+        pos[1] = pos[1] - 20
+        pg.sprite.Sprite.__init__(self)
+        self.image = pg.image.load('bomb.png').convert_alpha()
+        self.rect = self.image.get_rect(center=pos)
+        # добавляем в группу
+        self.add(group)
+
+
+    def update(self):
+        self.rect.y -= 5
+        if self.rect.y == 0:
+            self.kill()
+
+
 class Car(pg.sprite.Sprite):
     def __init__(self, x, surf, group):
         pg.sprite.Sprite.__init__(self)
@@ -94,13 +118,12 @@ class Car(pg.sprite.Sprite):
         if self.rect.y < H:
             self.rect.y += self.speed
         else:
-            # теперь не перебрасываем вверх,
-            # а удаляем из всех групп
             self.kill()
             global score
-            score += 10
+            score += 1
 
 class My_Car(pg.sprite.Sprite):
+
     def __init__(self, x, filename):
         pg.sprite.Sprite.__init__(self)
         self.image = pg.image.load(
@@ -128,15 +151,22 @@ class My_Car(pg.sprite.Sprite):
             self.rect.y = 0
 
     def boom(self):
+        # image = pg.image.load('demage_1.jpg').convert_alpha()
+        # dem_rect = image.get_rect(center=(self.rect.x + self.rect.width, self.rect.y + self.rect.width//2))
+        # sc.blit(image, dem_rect)
         pg.draw.circle(sc_main, pg.Color('red'), (self.rect.x + self.rect.width, self.rect.y + self.rect.width//2), self.rect.width//3)
+        pg.display.update()
+
+    def fire(self):
+        pg.draw.circle(sc_main, pg.Color('orange'), (self.rect.x + self.rect.width, self.rect.y + self.rect.width // 2),
+                       self.rect.width // 4)
+        return [self.rect.x + self.rect.width, self.rect.y + self.rect.width // 2]
 
 
 cars = pg.sprite.Group()
+bombs = pg.sprite.Group()
 my_car = My_Car(W//2, 'car.jpg')
-
-# добавляем первую машину,
-# которая появляется сразу
-# Car(randint(60, W//2), CARS_SURF[randint(0, 2)], cars) #разобраться с этой строкой
+pause = False
 
 while 1:
     record = get_record()
@@ -146,12 +176,12 @@ while 1:
     sc_main.blit(score_show, score_place)
     sc_main.blit(title_record, record_place)
 
+
     for i in pg.event.get():
         if i.type == pg.QUIT:
             sys.exit()
         elif i.type == pg.USEREVENT:
-            Car(randint(15, W - 15),
-                CARS_SURF[randint(0, 2)], cars)
+            Car(randint(15, W - 15), CARS_SURF[randint(0, 2)], cars)
 
         elif i.type == pg.KEYDOWN:
             if i.key == pg.K_LEFT:
@@ -162,32 +192,52 @@ while 1:
                 motion = UP
             elif i.key == pg.K_DOWN:
                 motion = DOWN
+            elif i.key == pg.K_LCTRL:
+                pos = my_car.fire()
+                fire_shot.play()
+                Bomb(pos, bombs)
+            elif i.key == pg.K_SPACE:
+                pause = not pause
+
 
         elif i.type == pg.KEYUP:
             if i.key in [pg.K_LEFT, pg.K_RIGHT, pg.K_UP, pg.K_DOWN]:
                 motion = STOP
 
-    sc.fill(WHITE)
-
-    sc.blit(my_car.image, my_car.rect) #тут должна быть моя машинка
-    cars.draw(sc)
-
-    if pg.sprite.spritecollideany(my_car, cars):
-        my_car.boom()
-        sc_main.blit(game_over, game_over_place)
-        pg.display.flip()
-        time.sleep(2)
-        set_record(record, score)
-        break
-
-    sc_main.blit(info_font.render(str(score), True, pg.Color('red')), (840, 250))
-    sc_main.blit(info_font.render(str(record), True, pg.Color('gold')), (840, 450))
-
-    pg.display.update()
+    if not pause:
+        sc.fill(WHITE)
+        sc.blit(my_car.image, my_car.rect) #тут должна быть моя машинка
+        cars.draw(sc)
+        bombs.draw(sc)
 
 
+        if pg.sprite.spritecollideany(my_car, cars):
+            pg.mixer.music.pause()
+            sc_main.blit(game_over, game_over_place)
+            my_car.boom()
+            boom.play()
+            pg.time.wait(1000)
+            game_over_music.play()
+            pg.time.wait(4000)
+            set_record(record, score)
+            break
 
-    pg.time.delay(20)
 
-    cars.update()
-    my_car.movie(motion)
+        for car in cars:
+            for bom in bombs:
+                if pg.sprite.spritecollideany(car, bombs):
+                    car.kill()
+                    bom.kill()
+                    demage_animy.play()
+                    score += 10
+
+        sc_main.blit(info_font.render(str(score), True, pg.Color('red')), (840, 250))
+        sc_main.blit(info_font.render(str(record), True, pg.Color('gold')), (840, 450))
+
+        pg.display.update()
+
+        pg.time.delay(10)
+
+        cars.update()
+        bombs.update()
+        my_car.movie(motion)
