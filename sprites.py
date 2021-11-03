@@ -28,15 +28,10 @@ W_, H_ = 1100, 659
 WHITE = (255, 255, 255)
 MAIN_FONT = (100, 150, 200)
 
-
 CARS = ('car1.png', 'car2.png', 'car3.png')
 
-
-# для хранения готовых машин-поверхностей
 CARS_SURF = []
 
-# надо установить видео режим
-# до вызова image.load()
 sc_main = pg.display.set_mode((W_, H_))
 sc = pg.Surface((W, H))
 sc_main.fill(MAIN_FONT)
@@ -48,7 +43,6 @@ boom = pg.mixer.Sound('smb_bump.wav')
 game_over_music = pg.mixer.Sound('smb_gameover.wav')
 fire_shot = pg.mixer.Sound('smb_fireworks.wav')
 demage_animy = pg.mixer.Sound('smb_breakblock.wav')
-
 
 info_font = pg.font.Font('font/font.ttf', 50)
 font_name = pg.font.Font('font/font.ttf', 80)
@@ -62,10 +56,11 @@ record_place = title_record.get_rect(center=(850, 400))
 
 main_font = pg.font.Font('font/font.ttf', 80)
 game_over = main_font.render("GAME OVER", True, pg.Color('green'))
-game_over_place = game_over.get_rect(center=(W_//2, H_//2))
+game_over_place = game_over.get_rect(center=(W_ // 2, H_ // 2))
 
 bg = pg.image.load('FONT.jpg').convert_alpha()
 score = 0
+
 
 def get_record():
     try:
@@ -81,9 +76,17 @@ def set_record(record, score):
     with open('record_cars', 'w') as f:
         f.write(str(rec))
 
+
 for i in range(len(CARS)):
     CARS_SURF.append(
         pg.image.load(CARS[i]).convert_alpha())
+
+
+class Demage(pg.sprite.Sprite):
+    def __init__(self, pos, filename):
+        pg.sprite.Sprite.__init__(self)
+        self.image = pg.image.load(filename).convert_alpha()
+        self.rect = self.image.get_rect(center=pos)
 
 
 class Bomb(pg.sprite.Sprite):
@@ -93,13 +96,11 @@ class Bomb(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self)
         self.image = pg.image.load('bomb.png').convert_alpha()
         self.rect = self.image.get_rect(center=pos)
-        # добавляем в группу
         self.add(group)
-
 
     def update(self):
         self.rect.y -= 5
-        if self.rect.y == 0:
+        if self.rect.y <= 0:
             self.kill()
 
 
@@ -109,9 +110,7 @@ class Car(pg.sprite.Sprite):
         self.image = surf
         self.rect = self.image.get_rect(
             center=(x, 0))
-        # добавляем в группу
         self.add(group)
-        # у машин будет разная скорость
         self.speed = randint(1, 3)
 
     def update(self):
@@ -122,6 +121,7 @@ class Car(pg.sprite.Sprite):
             global score
             score += -1
 
+
 class My_Car(pg.sprite.Sprite):
 
     def __init__(self, x, filename):
@@ -129,8 +129,7 @@ class My_Car(pg.sprite.Sprite):
         self.image = pg.image.load(
             filename).convert_alpha()
         self.rect = self.image.get_rect(
-            center=(x, H - self.image.get_height()//2))
-
+            center=(x, H - self.image.get_height() // 2))
 
     def movie(self, motion):
         if motion == LEFT:
@@ -141,21 +140,14 @@ class My_Car(pg.sprite.Sprite):
             self.rect.y -= 3
         elif motion == DOWN:
             self.rect.y += 3
-        if self.rect.x <= 0: #ограничения
+        if self.rect.x <= 0:  # ограничения
             self.rect.x = 0
-        if self.rect.x >= W - self.rect.width: #ограничения
+        if self.rect.x >= W - self.rect.width:  # ограничения
             self.rect.x = W - self.rect.width
-        if self.rect.y >= H - self.rect.height: #ограничения
+        if self.rect.y >= H - self.rect.height:  # ограничения
             self.rect.y = H - self.rect.height
-        if self.rect.y <= 0: #ограничения
+        if self.rect.y <= 0:  # ограничения
             self.rect.y = 0
-
-    def boom(self):
-        # image = pg.image.load('demage_1.jpg').convert_alpha()
-        # dem_rect = image.get_rect(center=(self.rect.x + self.rect.width, self.rect.y + self.rect.width//2))
-        # sc.blit(image, dem_rect)
-        pg.draw.circle(sc_main, pg.Color('red'), (self.rect.x + self.rect.width, self.rect.y + self.rect.width//2), self.rect.width//3)
-        pg.display.update()
 
     def fire(self):
         pg.draw.circle(sc_main, pg.Color('orange'), (self.rect.x + self.rect.width, self.rect.y + self.rect.width // 2),
@@ -165,7 +157,7 @@ class My_Car(pg.sprite.Sprite):
 
 cars = pg.sprite.Group()
 bombs = pg.sprite.Group()
-my_car = My_Car(W//2, 'car.jpg')
+my_car = My_Car(W // 2, 'car.jpg')
 pause = False
 
 while 1:
@@ -176,13 +168,11 @@ while 1:
     sc_main.blit(score_show, score_place)
     sc_main.blit(title_record, record_place)
 
-
     for i in pg.event.get():
         if i.type == pg.QUIT:
             sys.exit()
-        elif i.type == pg.USEREVENT:
+        elif i.type == pg.USEREVENT and not pause:
             Car(randint(15, W - 15), CARS_SURF[randint(0, 2)], cars)
-
         elif i.type == pg.KEYDOWN:
             if i.key == pg.K_LEFT:
                 motion = LEFT
@@ -199,34 +189,35 @@ while 1:
             elif i.key == pg.K_SPACE:
                 pause = not pause
 
-
         elif i.type == pg.KEYUP:
             if i.key in [pg.K_LEFT, pg.K_RIGHT, pg.K_UP, pg.K_DOWN]:
                 motion = STOP
 
     if not pause:
         sc.fill(WHITE)
-        sc.blit(my_car.image, my_car.rect) #тут должна быть моя машинка
+        sc.blit(my_car.image, my_car.rect)  # тут должна быть моя машинка
         cars.draw(sc)
         bombs.draw(sc)
 
-
         if pg.sprite.spritecollideany(my_car, cars):
-            pg.mixer.music.pause()
-            sc_main.blit(game_over, game_over_place)
+            pg.mixer.music.stop()
 
-            # sc_main.blit(score_show, score_place)  почему не показывает?
-            # sc_main.blit(title_record, record_place)  почему не показывает?
+            sc_main.blit(info_font.render(str(score), True, pg.Color('red')), (840, 250))
+            sc_main.blit(info_font.render(str(record), True, pg.Color('gold')), (840, 450))
 
-            my_car.boom()
+            pos = my_car.fire()
+            bump = Demage(pos, 'demage_1.jpg')
+            sc_main.blit(bump.image, bump.rect)
+            pg.display.update()
             boom.play()
-
             pg.time.wait(1000)
             game_over_music.play()
-            pg.time.wait(4000)
+            pg.time.wait(2000)
+            sc_main.blit(game_over, game_over_place)
+            pg.display.update()
+            pg.time.wait(2000)
             set_record(record, score)
             break
-
 
         for car in cars:
             for bom in bombs:
@@ -238,11 +229,8 @@ while 1:
 
         sc_main.blit(info_font.render(str(score), True, pg.Color('red')), (840, 250))
         sc_main.blit(info_font.render(str(record), True, pg.Color('gold')), (840, 450))
-
         pg.display.update()
-
         pg.time.delay(10)
-
         cars.update()
         bombs.update()
         my_car.movie(motion)
