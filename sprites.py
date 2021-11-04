@@ -199,9 +199,8 @@ while 1:
         cars.draw(sc)
         bombs.draw(sc)
 
-        if pg.sprite.spritecollideany(my_car, cars):
+        if pg.sprite.spritecollideany(my_car, cars): #спрайт и группа
             pg.mixer.music.stop()
-
             sc_main.blit(info_font.render(str(score), True, pg.Color('red')), (840, 250))
             sc_main.blit(info_font.render(str(record), True, pg.Color('gold')), (840, 450))
 
@@ -217,15 +216,12 @@ while 1:
             pg.display.update()
             pg.time.wait(2000)
             set_record(record, score)
-            break
+            sys.exit()
 
-        for car in cars:
-            for bom in bombs:
-                if pg.sprite.spritecollideany(car, bombs):
-                    car.kill()
-                    bom.kill()
-                    demage_animy.play()
-                    score += 10
+
+        for bom in pg.sprite.groupcollide(bombs, cars, True, True).keys(): #спрайты из разных групп
+            demage_animy.play()
+            score += 10
 
         sc_main.blit(info_font.render(str(score), True, pg.Color('red')), (840, 250))
         sc_main.blit(info_font.render(str(record), True, pg.Color('gold')), (840, 450))
