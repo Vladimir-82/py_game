@@ -1,71 +1,123 @@
 import pygame as pg
 import sys
+from random import randint
 
 pg.init()
-W_, H_ = 1100, 659
+W, H = 600, 600
 WHITE = (255, 255, 255)
 MAIN_FONT = (100, 150, 200)
-sc_main = pg.display.set_mode((W_, H_))
-sc_main.fill(MAIN_FONT)
+sc = pg.display.set_mode((W, H))
+# sc = pg.Surface((W, H))
+sc.fill(WHITE)
 
 
 RIGHT = "to the right"
 LEFT = "to the left"
 UP = "to the up"
 DOWN = "to the down"
-STOP = "stop"
 
-motion = STOP
+motion = UP
 
 
-class My_Car(pg.sprite.Sprite):
+class Head(pg.sprite.Sprite):
 
-    def __init__(self, x, y, filename):
+    def __init__(self, x, y, filename, group):
         pg.sprite.Sprite.__init__(self)
         self.image = pg.image.load(
             filename).convert_alpha()
         self.x = x
         self.y = y
-        self.rect = self.image.get_rect(center=(self.x, self.y + self.image.get_height()//2))
+        self.rect = self.image.get_rect(center=(self.x, self.y))
+        self.add(group)
+
 
     def to_the_left(self):
-        sc_main.fill((100, 150, 200))
+        sc.fill(WHITE)
         rot = pg.transform.rotate(self.image, 90)
         rot_rect = rot.get_rect(center=(self.x, self.y))
-        sc_main.blit(rot, rot_rect)
+        sc.blit(rot, rot_rect)
         self.x -= 2
+        if self.x == 0:
+            self.x = W - self.rect.height//2
+        return self.x, self.y
 
     def to_the_right(self):
-        sc_main.fill((100, 150, 200))
+        sc.fill(WHITE)
         rot = pg.transform.rotate(self.image, -90)
         rot_rect = rot.get_rect(center=(self.x, self.y))
-        sc_main.blit(rot, rot_rect)
+        sc.blit(rot, rot_rect)
         self.x += 2
+        if self.x == W:
+            self.x = self.rect.height//2
+        return self.x, self.y
 
     def to_the_up(self):
-        sc_main.fill((100, 150, 200))
-        sc_main.blit(self.image, self.rect)
+        sc.fill(WHITE)
+        sc.blit(self.image, self.rect)
         self.y -= 2
+        if self.y == 0:
+            self.y = H - self.rect.width//2
+        return self.x, self.y
 
     def to_the_down(self):
-        sc_main.fill((100, 150, 200))
+        sc.fill(WHITE)
         rot = pg.transform.rotate(self.image, 180)
         rot_rect = rot.get_rect(center=(self.x, self.y))
-        sc_main.blit(rot, rot_rect)
+        sc.blit(rot, rot_rect)
         self.y += 2
+        if self.y == H:
+            self.y = self.rect.width//2
+        return self.x, self.y
 
 
+class Body(pg.sprite.Sprite):
+    def __init__(self, pos, surf, group):
+        pg.sprite.Sprite.__init__(self)
+        self.image = surf
+        self.rect = self.image.get_rect(center=pos)
+        self.add(group)
 
-x, y = 200, 0
-my_car = My_Car(x, y, 'car.jpg')
-sc_main.blit(my_car.image, my_car.rect)
+class Apple(pg.sprite.Sprite):
+    def __init__(self, x, y, surf, group):
+        pg.sprite.Sprite.__init__(self)
+        self.image = pg.image.load(surf).convert_alpha()
+        self.rect = self.image.get_rect(center=(x, y))
+        self.add(group)
+
+
+class Troubles(pg.sprite.Sprite):
+    def __init__(self, pos, surf, group):
+        pg.sprite.Sprite.__init__(self)
+        self.image = surf
+        self.rect = self.image.get_rect(center=pos)
+        self.add(group)
+
+
+x, y = W//2, H//2
+BUSHES = ('bush_1.jpg', 'bush_2.jpg', 'bush_3.jpg')
+BUSHES_SURF = []
+count_troublse = 3
+
+heads = pg.sprite.Group()
+
+apples = pg.sprite.Group()
+apple = Apple((randint(0, W)), (randint(0, H)), 'apple.png', apples)
+sc.blit(apple.image, apple.rect)
+
+bushes = pg.sprite.Group()
+for i in range(count_troublse):
+    BUSHES_SURF.append(pg.image.load(BUSHES[i]).convert_alpha())
+
+for i in range(count_troublse):
+    Troubles((randint(0, W), (randint(0, H))), BUSHES_SURF[randint(0, 1)], bushes)
+
+bodes = pg.sprite.Group()
+
 pg.display.update()
 
 
 while 1:
-
-    my_car = My_Car(x, y, 'car.jpg')
-    sc_main.blit(my_car.image, my_car.rect)
+    head = Head(x, y, 'head_snake.png', heads)
 
     for i in pg.event.get():
         if i.type == pg.QUIT:
@@ -80,20 +132,31 @@ while 1:
             elif i.key == pg.K_DOWN:
                 motion = DOWN
 
-        elif i.type == pg.KEYUP:
-            if i.key in [pg.K_LEFT, pg.K_RIGHT, pg.K_UP, pg.K_DOWN]:
-                motion = STOP
-
-
     if motion == LEFT:
-        my_car.to_the_left()
-        pg.display.update()
+        x, y = head.to_the_left()
     elif motion == RIGHT:
-        my_car.to_the_right()
-        pg.display.update()
+        x, y = head.to_the_right()
     elif motion == UP:
-        my_car.to_the_up()
-        pg.display.update()
+        x, y = head.to_the_up()
     elif motion == DOWN:
-        my_car.to_the_down()
-        pg.display.update()
+        x, y = head.to_the_down()
+
+    bushes.draw(sc)
+    apples.draw(sc)
+    pg.display.update()
+
+
+    for col in pg.sprite.groupcollide(heads, bushes, False, False).keys():
+        sys.exit()
+
+    for col in pg.sprite.groupcollide(heads, apples, True, True).keys():
+        apple = Apple((randint(0, W)), (randint(0, H)), 'apple.png', apples)
+        sc.blit(apple.image, apple.rect)
+
+        print(head.x, head.y)
+        pos = head.x, head.y
+        body = Body(())
+
+
+
+    pg.time.delay(30)
