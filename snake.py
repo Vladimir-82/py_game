@@ -124,9 +124,12 @@ pg.display.update()
 
 while 1:
     head = Head(x, y, 'head_snake.png', heads)
-    # if body_elements:
-    #     for i in body_elements:
-    #         Body(i[0], i[1], 'body.png', bodes)
+    if body_elements:
+        for i in body_elements:
+            if motion == LEFT:
+                body = Body(i[0], i[1], 'body.png', bodes)
+                # body.to_left()
+
 
 
     for i in pg.event.get():
@@ -158,20 +161,17 @@ while 1:
     for col in pg.sprite.groupcollide(heads, apples, True, True).keys():
         apple = Apple((randint(0, W)), (randint(0, H)), 'apple.png', apples)
 
-        # x_b, y_b = head.x, head.y #змея не растет(скотина)
-        # body = Body(x_b, y_b, 'body.png', bodes)
-        # if motion == LEFT:
-        #     x_b, y_b = body.to_left()
-        #     x_b += 40
-        #
-        # elif motion == RIGHT:
-        #     head.x -= 40
-        # elif motion == UP:
-        #     head.y += 40
-        # elif motion == DOWN:
-        #     head.y -= 40
-        # print((x_b, y_b))
-        # body_elements.append((x_b, y_b))
+        x_b, y_b = head.x, head.y #змея не растет(скотина)
+
+        if motion == LEFT:
+            x_b += 40
+        elif motion == RIGHT:
+            x_b -= 40
+        elif motion == UP:
+            y_b += 40
+        elif motion == DOWN:
+            y_b -= 40
+        body_elements.append((x_b, y_b))
 
 
     bushes.draw(sc)

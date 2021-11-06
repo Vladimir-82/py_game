@@ -226,7 +226,7 @@ while 1:
         sc_main.blit(info_font.render(str(score), True, pg.Color('red')), (840, 250))
         sc_main.blit(info_font.render(str(record), True, pg.Color('gold')), (840, 450))
         pg.display.update()
-        pg.time.delay(10)
+        pg.time.delay(20)
         cars.update()
         bombs.update()
         my_car.movie(motion)
