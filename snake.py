@@ -79,9 +79,6 @@ class Body(pg.sprite.Sprite):
         self.y = y
         self.add(group)
 
-    def to_left(self):
-        self.x -= 2
-        return self.x, self.y
 
 class Apple(pg.sprite.Sprite):
     def __init__(self, x, y, surf, group):
@@ -100,6 +97,7 @@ class Troubles(pg.sprite.Sprite):
 
 
 x, y = W//2, H//2
+
 BUSHES = ('bush_1.jpg', 'bush_2.jpg', 'bush_3.jpg')
 BUSHES_SURF = []
 count_troublse = 3
@@ -124,11 +122,7 @@ pg.display.update()
 
 while 1:
     head = Head(x, y, 'head_snake.png', heads)
-    if body_elements:
-        for i in body_elements:
-            if motion == LEFT:
-                body = Body(i[0], i[1], 'body.png', bodes)
-                # body.to_left()
+    body = Body(x, y, 'body.png', bodes)
 
 
 
@@ -147,6 +141,7 @@ while 1:
 
     if motion == LEFT:
         x, y = head.to_the_left()
+
     elif motion == RIGHT:
         x, y = head.to_the_right()
     elif motion == UP:
@@ -161,17 +156,6 @@ while 1:
     for col in pg.sprite.groupcollide(heads, apples, True, True).keys():
         apple = Apple((randint(0, W)), (randint(0, H)), 'apple.png', apples)
 
-        x_b, y_b = head.x, head.y #змея не растет(скотина)
-
-        if motion == LEFT:
-            x_b += 40
-        elif motion == RIGHT:
-            x_b -= 40
-        elif motion == UP:
-            y_b += 40
-        elif motion == DOWN:
-            y_b -= 40
-        body_elements.append((x_b, y_b))
 
 
     bushes.draw(sc)
