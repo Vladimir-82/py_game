@@ -79,6 +79,11 @@ class Body(pg.sprite.Sprite):
         self.y = y
         self.add(group)
 
+    def to_the_left(self):
+        sc.fill(WHITE)
+        self.x -= 2
+        return self.x, self.y
+
 
 class Apple(pg.sprite.Sprite):
     def __init__(self, x, y, surf, group):
@@ -122,8 +127,12 @@ pg.display.update()
 
 while 1:
     head = Head(x, y, 'head_snake.png', heads)
-    body = Body(x, y, 'body.png', bodes)
 
+    body_elements.append((x, y))
+    print(body_elements)
+    for i in body_elements:
+
+        Body(i[0], i[1], 'body.png', bodes)
 
 
     for i in pg.event.get():
