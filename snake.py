@@ -70,19 +70,15 @@ class Head(pg.sprite.Sprite):
         return self.x, self.y
 
 
-class Body(pg.sprite.Sprite):
-    def __init__(self, x, y,  surf, group):
-        pg.sprite.Sprite.__init__(self)
-        self.image = pg.image.load(surf).convert_alpha()
-        self.rect = self.image.get_rect(center=(x, y))
-        self.x = x
-        self.y = y
-        self.add(group)
-
-    def to_the_left(self):
-        sc.fill(WHITE)
-        self.x -= 2
-        return self.x, self.y
+class Body(Head):
+    pass
+    # def __init__(self, x, y,  surf, group):
+    #     pg.sprite.Sprite.__init__(self)
+    #     self.image = pg.image.load(surf).convert_alpha()
+    #     self.rect = self.image.get_rect(center=(x, y))
+    #     self.x = x
+    #     self.y = y
+    #     self.add(group)
 
 
 class Apple(pg.sprite.Sprite):
@@ -102,6 +98,8 @@ class Troubles(pg.sprite.Sprite):
 
 
 x, y = W//2, H//2
+# x_b, y_b = x, y
+
 
 BUSHES = ('bush_1.jpg', 'bush_2.jpg', 'bush_3.jpg')
 BUSHES_SURF = []
@@ -127,12 +125,8 @@ pg.display.update()
 
 while 1:
     head = Head(x, y, 'head_snake.png', heads)
+    # body = Body(x, y, 'body.png', bodes)
 
-    body_elements.append((x, y))
-    print(body_elements)
-    for i in body_elements:
-
-        Body(i[0], i[1], 'body.png', bodes)
 
 
     for i in pg.event.get():
@@ -153,16 +147,19 @@ while 1:
 
     elif motion == RIGHT:
         x, y = head.to_the_right()
+
     elif motion == UP:
         x, y = head.to_the_up()
+
     elif motion == DOWN:
         x, y = head.to_the_down()
+
 
 
     for col in pg.sprite.groupcollide(heads, bushes, False, False).keys():
         sys.exit()
 
-    for col in pg.sprite.groupcollide(heads, apples, True, True).keys():
+    for col in pg.sprite.groupcollide(heads, apples, False, True).keys():
         apple = Apple((randint(0, W)), (randint(0, H)), 'apple.png', apples)
 
 
@@ -170,6 +167,7 @@ while 1:
     bushes.draw(sc)
     apples.draw(sc)
     bodes.draw(sc)
+    # heads.draw(sc)
 
     pg.display.update()
     pg.time.delay(10)
