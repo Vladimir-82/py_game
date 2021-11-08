@@ -70,7 +70,7 @@ class Head(pg.sprite.Sprite):
         return self.x, self.y
 
 
-class Body(pg.sprite.Sprite):
+class Body(Head):
 
     def __init__(self, x, y,  surf, group):
         pg.sprite.Sprite.__init__(self)
@@ -116,14 +116,10 @@ for i in range(count_troublse):
     Troubles((randint(0, W), (randint(0, H))), BUSHES_SURF[randint(0, 1)], bushes)
 
 bodes = pg.sprite.Group()
-counter = 0
 
-pg.display.update()
-body_list = []
 
 while 1:
-    head = Head(x, y, 'head_snake.png', heads)
-
+    head = Head(x, y, 'body.png', heads)
 
     for i in pg.event.get():
         if i.type == pg.QUIT:
@@ -146,7 +142,6 @@ while 1:
         x, y = head.to_the_up()
     elif motion == DOWN:
         x, y = head.to_the_down()
-
 
     for col in pg.sprite.groupcollide(heads, bushes, False, False).keys():
         sys.exit()
