@@ -71,14 +71,30 @@ class Head(pg.sprite.Sprite):
 
 
 class Body(Head):
-
-    def __init__(self, x, y,  surf, group):
+    bode_list = []
+    def __init__(self, x, y, filename, group):
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.image.load(surf).convert_alpha()
+        self.image = pg.image.load(
+            filename).convert_alpha()
         self.rect = self.image.get_rect(center=(x, y))
-        self.x = x
-        self.y = y
         self.add(group)
+
+        Body.bode_list.append((x, y))
+
+        if len(Body.bode_list) == 50:
+            self.kill()
+
+
+
+
+
+    # def move(self):
+    #     sc.fill(WHITE)
+    #     Body.bode_list.append((self.x, self.y))
+    #     print(Body.bode_list)
+    #     if len(Body.bode_list) == 40:
+    #         self.add(self.group)
+    #         sc.blit(self.image, self.rect)
 
 class Apple(pg.sprite.Sprite):
     def __init__(self, x, y, surf, group):
@@ -119,7 +135,9 @@ bodes = pg.sprite.Group()
 
 
 while 1:
-    head = Head(x, y, 'body.png', heads)
+    head = Head(x, y, 'head_snake.png', heads)
+    body = Body(x, y, 'body.png', bodes)
+    # body.move()
 
     for i in pg.event.get():
         if i.type == pg.QUIT:
