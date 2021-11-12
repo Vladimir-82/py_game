@@ -71,20 +71,12 @@ class Head(pg.sprite.Sprite):
 
 
 class Body(Head):
-    bode_list = []
     def __init__(self, x, y, filename, group):
         pg.sprite.Sprite.__init__(self)
         self.image = pg.image.load(
             filename).convert_alpha()
         self.rect = self.image.get_rect(center=(x, y))
         self.add(group)
-
-        Body.bode_list.append((x, y))
-
-        if len(Body.bode_list) == 50:
-            self.kill()
-
-
 
 
 
@@ -133,10 +125,19 @@ for i in range(count_troublse):
 
 bodes = pg.sprite.Group()
 
+body_list = []
+
+
 
 while 1:
     head = Head(x, y, 'head_snake.png', heads)
-    body = Body(x, y, 'body.png', bodes)
+
+    # body_list.append((x, y))
+    # if len(body_list) == 40:
+    #     for i in body_list:
+    #         body = Body(i[0], i[1], 'body.png', bodes)
+
+
     # body.move()
 
     for i in pg.event.get():
