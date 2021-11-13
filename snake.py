@@ -76,17 +76,10 @@ class Body(Head):
         self.image = pg.image.load(
             filename).convert_alpha()
         self.rect = self.image.get_rect(center=(x, y))
+        sc.blit(self.image, self.rect)
         self.add(group)
 
 
-
-    # def move(self):
-    #     sc.fill(WHITE)
-    #     Body.bode_list.append((self.x, self.y))
-    #     print(Body.bode_list)
-    #     if len(Body.bode_list) == 40:
-    #         self.add(self.group)
-    #         sc.blit(self.image, self.rect)
 
 class Apple(pg.sprite.Sprite):
     def __init__(self, x, y, surf, group):
@@ -121,24 +114,24 @@ for i in range(count_troublse):
     BUSHES_SURF.append(pg.image.load(BUSHES[i]).convert_alpha())
 
 for i in range(count_troublse):
-    Troubles((randint(0, W), (randint(0, H))), BUSHES_SURF[randint(0, 1)], bushes)
+    Troubles((randint(0, W), (randint(0, H))), BUSHES_SURF[randint(0, 2)], bushes)
 
 bodes = pg.sprite.Group()
 
 body_list = []
 
-
-
 while 1:
+    sc.fill(WHITE)
     head = Head(x, y, 'head_snake.png', heads)
+    body = Body(x, y, 'body.png', bodes)
+    body_list.append(body)
+    if len(body_list) >= 60:
+        print('hi')
+        body_list[0].kill()
 
-    # body_list.append((x, y))
-    # if len(body_list) == 40:
-    #     for i in body_list:
-    #         body = Body(i[0], i[1], 'body.png', bodes)
 
 
-    # body.move()
+
 
     for i in pg.event.get():
         if i.type == pg.QUIT:
