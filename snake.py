@@ -119,18 +119,21 @@ for i in range(count_troublse):
 bodes = pg.sprite.Group()
 
 body_list = []
+lenght = 0
 
 while 1:
     sc.fill(WHITE)
     head = Head(x, y, 'head_snake.png', heads)
-    body = Body(x, y, 'body.png', bodes)
-    body_list.append(body)
-    if len(body_list) >= 60:
-        print('hi')
-        body_list[0].kill()
 
 
 
+
+    if lenght > 0:
+        body = Body(x, y, 'body.png', bodes)
+        body_list.append(body)
+        body_list = body_list[60:]
+        print(body_list)
+        # i.kill()
 
 
     for i in pg.event.get():
@@ -161,6 +164,8 @@ while 1:
     for col in pg.sprite.groupcollide(heads, apples, False, True).keys():
         apple = Apple((randint(0, W)), (randint(0, H)), 'apple.png', apples)
 
+        lenght += 40
+        print(lenght)
 
 
     bushes.draw(sc)
