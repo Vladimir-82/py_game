@@ -102,7 +102,7 @@ x, y = W//2, H//2
 
 BUSHES = ('bush_1.jpg', 'bush_2.jpg', 'bush_3.jpg')
 BUSHES_SURF = []
-count_troublse = 3
+count_troublse = 5
 
 heads = pg.sprite.Group()
 
@@ -111,7 +111,7 @@ apple = Apple((randint(0, W)), (randint(0, H)), 'apple.png', apples)
 
 bushes = pg.sprite.Group()
 for i in range(count_troublse):
-    BUSHES_SURF.append(pg.image.load(BUSHES[i]).convert_alpha())
+    BUSHES_SURF.append(pg.image.load(BUSHES[randint(0, 2)]).convert_alpha())
 
 for i in range(count_troublse):
     Troubles((randint(0, W), (randint(0, H))), BUSHES_SURF[randint(0, 2)], bushes)
@@ -123,18 +123,15 @@ lenght = 0
 
 while 1:
     sc.fill(WHITE)
-    head = Head(x, y, 'head_snake.png', heads)
-
-
-
+    head = Head(x, y, 'body.png', heads)
 
     if lenght > 0:
+
         body = Body(x, y, 'body.png', bodes)
         body_list.append(body)
-        body_list = body_list[60:]
-        print(body_list)
-        # i.kill()
 
+        for i in body_list[:-lenght]:
+            i.kill()
 
     for i in pg.event.get():
         if i.type == pg.QUIT:
@@ -160,12 +157,20 @@ while 1:
 
     for col in pg.sprite.groupcollide(heads, bushes, False, False).keys():
         sys.exit()
+    # for col in pg.sprite.groupcollide(heads, bodes, False, False).keys():
+    #     sys.exit()
+
 
     for col in pg.sprite.groupcollide(heads, apples, False, True).keys():
-        apple = Apple((randint(0, W)), (randint(0, H)), 'apple.png', apples)
-
-        lenght += 40
+        lenght += 15
         print(lenght)
+
+        apple = Apple((randint(0, W)), (randint(0, H)), 'apple.png', apples)
+        while pg.sprite.spritecollideany(apple, bushes):
+            apple.kill()
+            apple = Apple((randint(0, W)), (randint(0, H)), 'apple.png', apples)
+
+
 
 
     bushes.draw(sc)
