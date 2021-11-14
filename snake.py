@@ -21,12 +21,13 @@ motion = UP
 
 class Head(pg.sprite.Sprite):
 
-    def __init__(self, x, y, filename, group):
+    def __init__(self, x, y, filename, speed, group):
         pg.sprite.Sprite.__init__(self)
         self.image = pg.image.load(
             filename).convert_alpha()
         self.x = x
         self.y = y
+        self.speed = speed
         self.rect = self.image.get_rect(center=(self.x, self.y))
         self.add(group)
 
@@ -36,7 +37,7 @@ class Head(pg.sprite.Sprite):
         rot = pg.transform.rotate(self.image, 90)
         rot_rect = rot.get_rect(center=(self.x, self.y))
         sc.blit(rot, rot_rect)
-        self.x -= 2
+        self.x -= self.speed
         if self.x == 0:
             self.x = W - self.rect.height//2
         return self.x, self.y
@@ -46,7 +47,7 @@ class Head(pg.sprite.Sprite):
         rot = pg.transform.rotate(self.image, -90)
         rot_rect = rot.get_rect(center=(self.x, self.y))
         sc.blit(rot, rot_rect)
-        self.x += 2
+        self.x += self.speed
         if self.x == W:
             self.x = self.rect.height//2
         return self.x, self.y
@@ -54,7 +55,7 @@ class Head(pg.sprite.Sprite):
     def to_the_up(self):
         sc.fill(WHITE)
         sc.blit(self.image, self.rect)
-        self.y -= 2
+        self.y -= self.speed
         if self.y == 0:
             self.y = H - self.rect.width//2
         return self.x, self.y
@@ -64,7 +65,7 @@ class Head(pg.sprite.Sprite):
         rot = pg.transform.rotate(self.image, 180)
         rot_rect = rot.get_rect(center=(self.x, self.y))
         sc.blit(rot, rot_rect)
-        self.y += 2
+        self.y += self.speed
         if self.y == H:
             self.y = self.rect.width//2
         return self.x, self.y
@@ -73,8 +74,7 @@ class Head(pg.sprite.Sprite):
 class Body(Head):
     def __init__(self, x, y, filename, group):
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.image.load(
-            filename).convert_alpha()
+        self.image = pg.image.load(filename).convert_alpha()
         self.rect = self.image.get_rect(center=(x, y))
         sc.blit(self.image, self.rect)
         self.add(group)
@@ -120,10 +120,11 @@ bodes = pg.sprite.Group()
 
 body_list = []
 lenght = 0
+speed = 3
 
 while 1:
     sc.fill(WHITE)
-    head = Head(x, y, 'body.png', heads)
+    head = Head(x, y, 'head_snake.png', speed, heads)
 
     if lenght > 0:
 
@@ -132,6 +133,7 @@ while 1:
 
         for i in body_list[:-lenght]:
             i.kill()
+
 
     for i in pg.event.get():
         if i.type == pg.QUIT:
@@ -163,7 +165,7 @@ while 1:
 
     for col in pg.sprite.groupcollide(heads, apples, False, True).keys():
         lenght += 15
-        print(lenght)
+        speed += 0.2
 
         apple = Apple((randint(0, W)), (randint(0, H)), 'apple.png', apples)
         while pg.sprite.spritecollideany(apple, bushes):
