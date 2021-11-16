@@ -100,7 +100,7 @@ x, y = W // 2, H // 2
 
 BUSHES = ('bush_1.jpg', 'bush_2.jpg', 'bush_3.jpg')
 BUSHES_SURF = []
-count_troublse = 5
+count_troublse = 3
 
 heads = pg.sprite.Group()
 
@@ -150,10 +150,12 @@ while 1:
             elif i.key == pg.K_DOWN and motion != UP:
                 motion = DOWN
 
-    for col in pg.sprite.groupcollide(heads, bushes, False, False).keys():
+    for col in pg.sprite.groupcollide(heads, bushes, False, False).keys(): # snake eats bushes
         sys.exit()
+
     if pg.sprite.spritecollideany(head, bodes):
         bodes.draw(sc)
+
 
         if motion == LEFT:
             rot = pg.transform.rotate(head.image, 90)
@@ -182,9 +184,14 @@ while 1:
             apple.kill()
             apple = Apple((randint(0, W)), (randint(0, H)), 'apple.png', apples)
 
+
+    if len(pg.sprite.spritecollide(head, bodes, False)) > 40: # snake eats itself
+        print('snake eats itself')
+        sys.exit()
+
+
     bushes.draw(sc)
     apples.draw(sc)
-
     pg.display.update()
 
     pg.time.delay(30)
