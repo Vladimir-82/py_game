@@ -79,7 +79,7 @@ class Body(Head):
         self.add(group)
 
 
-class Apple(pg.sprite.Sprite):
+class Fruit(pg.sprite.Sprite):
 
     def __init__(self, x, y, surf, group):
         pg.sprite.Sprite.__init__(self)
@@ -95,14 +95,13 @@ class Troubles(pg.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
         self.add(group)
 
+heads = pg.sprite.Group()
 
 x, y = W // 2, H // 2
 
 BUSHES = ('bush_1.jpg', 'bush_2.jpg', 'bush_3.jpg')
 BUSHES_SURF = []
 count_troublse = 3
-
-heads = pg.sprite.Group()
 
 bushes = pg.sprite.Group()
 for i in range(count_troublse):
@@ -112,14 +111,16 @@ for i in range(count_troublse):
     Troubles((randint(0, W // 2 - 80), (randint(0, H))), BUSHES_SURF[randint(0, 2)], bushes)
     Troubles((randint(W // 2 + 80, W), (randint(0, H))), BUSHES_SURF[randint(0, 2)], bushes)
 
+FRUITS = ('apple.png', 'banana.jpg', 'pineaplle.jpg')
+fruits = pg.sprite.Group()
+fruit = Fruit((randint(0, W)), (randint(0, H)), FRUITS[randint(0, 2)], fruits)
+
+while pg.sprite.spritecollideany(fruit, bushes):
+    fruit.kill()
+    fruit = Fruit((randint(0, W)), (randint(0, H)), FRUITS[randint(0, 2)], fruits)
+
+
 bodes = pg.sprite.Group()
-
-apples = pg.sprite.Group()
-apple = Apple((randint(0, W)), (randint(0, H)), 'apple.png', apples)
-while pg.sprite.spritecollideany(apple, bushes):
-    apple.kill()
-    apple = Apple((randint(0, W)), (randint(0, H)), 'apple.png', apples)
-
 body_list = []
 lenght = 0
 
@@ -129,7 +130,6 @@ while 1:
     x, y = head.move()
 
     if lenght > 0:
-
         body = Body(x, y, 'body.png', bodes)
         body_list.append(body)
 
@@ -137,7 +137,6 @@ while 1:
             i.kill()
 
     for i in pg.event.get():
-
         if i.type == pg.QUIT:
             sys.exit()
         elif i.type == pg.KEYDOWN:
@@ -150,12 +149,11 @@ while 1:
             elif i.key == pg.K_DOWN and motion != UP:
                 motion = DOWN
 
-    for col in pg.sprite.groupcollide(heads, bushes, False, False).keys(): # snake eats bushes
+    for col in pg.sprite.groupcollide(heads, bushes, False, False).keys():  # snake eats bushes
         sys.exit()
 
     if pg.sprite.spritecollideany(head, bodes):
         bodes.draw(sc)
-
 
         if motion == LEFT:
             rot = pg.transform.rotate(head.image, 90)
@@ -172,26 +170,28 @@ while 1:
             rot_rect = rot.get_rect(center=(x, y))
             sc.blit(rot, rot_rect)
 
+    for col in pg.sprite.groupcollide(heads, fruits, False, True).keys():
+        if lenght < 40:
+            lenght += 20
+        elif 40 <= lenght <= 80:
+            lenght += 10
+        elif 81 <= lenght <= 1000:
+            lenght += 5
 
-
-    for col in pg.sprite.groupcollide(heads, apples, False, True).keys():
-
-        lenght += 15
         Head.speed += 0.1
 
-        apple = Apple((randint(0, W)), (randint(0, H)), 'apple.png', apples)
-        while pg.sprite.spritecollideany(apple, bushes):
-            apple.kill()
-            apple = Apple((randint(0, W)), (randint(0, H)), 'apple.png', apples)
+        fruit = Fruit((randint(0, W)), (randint(0, H)), FRUITS[randint(0, 2)], fruits)
 
+        while pg.sprite.spritecollideany(fruit, bushes):
+            fruit.kill()
+            fruit = Fruit((randint(0, W)), (randint(0, H)), FRUITS[randint(0, 2)], fruits)
 
-    if len(pg.sprite.spritecollide(head, bodes, False)) > 40: # snake eats itself
+    if len(pg.sprite.spritecollide(head, bodes, False)) > 50:  # snake eats itself
         print('snake eats itself')
         sys.exit()
 
-
     bushes.draw(sc)
-    apples.draw(sc)
+    fruits.draw(sc)
     pg.display.update()
 
     pg.time.delay(30)
