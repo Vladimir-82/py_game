@@ -114,7 +114,7 @@ head = Head(x, y, 'head_snake.png', motion, heads)
 
 BUSHES = ('bush_1.jpg', 'bush_2.jpg', 'bush_3.jpg')
 BUSHES_SURF = []
-count_troublse = 3
+count_troublse = 7
 
 bushes = pg.sprite.Group()
 for i in range(count_troublse):
@@ -169,12 +169,28 @@ while 1:
     for col in pg.sprite.groupcollide(heads, bushes, False, False).keys():  # snake eats bushes
         print('snake eats bushes')
         sys.exit()
-    for col in pg.sprite.groupcollide(heads, mashrooms, False, False).keys():  # snake eats mashroom
+
+    if pg.sprite.spritecollideany(head, mashrooms):
         print('snake eats mashroom')
         sys.exit()
+
+    for col in pg.sprite.groupcollide(mashrooms, bodes, True, False).keys():
+        print('mashroom on snakes body')
+        mashroom = Mashroom((randint(head.image.get_width() // 2, W - head.image.get_width() // 2)),
+                            (randint(head.image.get_width() // 2, H - head.image.get_width() // 2)), 'mashroom.jpg',
+                            mashrooms)
+
+    for col in pg.sprite.groupcollide(mashrooms, bushes, True, False).keys():
+        print('mashroom on bushes')
+        mashroom = Mashroom((randint(head.image.get_width() // 2, W - head.image.get_width() // 2)),
+                            (randint(head.image.get_width() // 2, H - head.image.get_width() // 2)), 'mashroom.jpg',
+                            mashrooms)
+
     for col in pg.sprite.groupcollide(fruits, mashrooms, True, False).keys():  # snake eats mashroom
         print('mashroom kills fruit')
         fruit = Fruit((randint(0, W)), (randint(0, H)), FRUITS[randint(0, 2)], fruits)
+
+
 
     if pg.sprite.spritecollideany(head, bodes):
         bodes.draw(sc)
@@ -211,12 +227,11 @@ while 1:
             fruit = Fruit((randint(0, W)), (randint(0, H)), FRUITS[randint(0, 2)], fruits)
 
     if not mashroom:
-        dice = randint(1, 500)
+        dice = randint(1, 400)
         if dice == 1:
             mashroom = Mashroom((randint(head.image.get_width() // 2, W - head.image.get_width() // 2)),
                                 (randint(head.image.get_width() // 2, H - head.image.get_width() // 2)), 'mashroom.jpg',
                                 mashrooms)
-            print('mashroom growns')
             raund = 0
     if mashroom:
         if raund == 500:
