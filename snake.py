@@ -1,5 +1,6 @@
 '''
 The snake
+https://python-scripts.com/kivy-android-ios-exe
 '''
 import pygame as pg
 import sys
@@ -283,7 +284,7 @@ while True:
         for col in pg.sprite.groupcollide(heads, fruits, False, True).keys():
             coin.play()
             score += 10
-            FPS += 2
+            FPS += 1
             if lenght < head.image.get_width():
                 lenght += head.image.get_width()//2
             elif head.image.get_width() <= lenght <= head.image.get_width() * 2:
